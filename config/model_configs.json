@@ -11,10 +11,28 @@
     "num_beams": 5,
     "description": "Vision-language model for image understanding"
   },
+  "audio_model": {
+    "name": "whisper-base",
+    "language": "en",
+    "task": "transcribe",
+    "description": "OpenAI Whisper for speech recognition"
+  },
+  "tts_settings": {
+    "provider": "gtts",
+    "language": "en",
+    "slow": false,
+    "description": "Google Text-to-Speech"
+  },
+  "fusion_settings": {
+    "mode": "balanced",
+    "enable_memory": true,
+    "max_history": 100,
+    "context_window": 5
+  },
   "ui_settings": {
-    "theme": "default",
+    "theme": "soft",
     "dark_mode": true,
-    "accent_color": "#7C3AED"
+    "accent_color": "#764ba2"
   },
   "cache_directory": "./models_cache"
 }
