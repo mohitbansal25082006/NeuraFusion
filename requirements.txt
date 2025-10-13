@@ -1,0 +1,16 @@
+# Core ML Libraries
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+transformers>=4.45.0
+accelerate>=0.20.0
+sentencepiece>=0.1.99
+
+# UI Framework
+gradio>=5.0.0
+
+# Image Processing
+pillow>=10.0.0
+
+# Utilities
+python-dotenv>=1.0.0

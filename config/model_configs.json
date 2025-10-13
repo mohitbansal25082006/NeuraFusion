@@ -1,0 +1,20 @@
+{
+  "text_model": {
+    "name": "google/flan-t5-base",
+    "max_length": 512,
+    "temperature": 0.7,
+    "description": "Instruction-tuned text generation model"
+  },
+  "image_model": {
+    "name": "Salesforce/blip2-opt-2.7b",
+    "max_length": 256,
+    "num_beams": 5,
+    "description": "Vision-language model for image understanding"
+  },
+  "ui_settings": {
+    "theme": "default",
+    "dark_mode": true,
+    "accent_color": "#7C3AED"
+  },
+  "cache_directory": "./models_cache"
+}

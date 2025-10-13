@@ -1,0 +1,10 @@
+models_cache
+# Ignore Python cache files and folders
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Optional: Ignore virtual environment folders
+venv/
+env/
