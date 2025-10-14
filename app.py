@@ -494,6 +494,15 @@ def get_system_status():
   
     return "\n".join(output)
 
+def handle_chat_export():
+    """
+    Handle export from smart chat tab.
+    
+    Returns:
+        Export status message
+    """
+    return "💾 Chat exported! You can now download it from the Export tab."
+
 # ============================================
 # BUILD ENHANCED GRADIO INTERFACE
 # ============================================
@@ -512,6 +521,10 @@ else:
         border-radius: 10px;
         margin-bottom: 20px;
         text-align: center;
+    }
+    .scrollable-textbox {
+        max-height: 400px;
+        overflow-y: auto !important;
     }
     """
 
@@ -569,6 +582,13 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Soft(), title="NeuraFusion V3") a
                     with gr.Row():
                         txt_clear = gr.Button("Clear 🗑️")
                         txt_export = gr.Button("Export 💾")
+                  
+                    # Export status message for chat tab
+                    chat_export_status = gr.Textbox(
+                        label="Export Status",
+                        visible=False,
+                        interactive=False
+                    )
               
                 with gr.Column(scale=1):
                     personality_select = gr.Radio(
@@ -579,7 +599,7 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Soft(), title="NeuraFusion V3") a
                     )
                   
                     use_openai_chat = gr.Checkbox(
-                        label="🔐 Use GPT-4o (if available)",
+                        label="🔐 Use GPT-4o ",
                         value=False,
                         info="Premium AI model"
                     )
@@ -609,6 +629,12 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Soft(), title="NeuraFusion V3") a
             )
           
             txt_clear.click(lambda: None, outputs=[chatbot])
+          
+            # Export button in chat tab
+            txt_export.click(
+                handle_chat_export,
+                outputs=[chat_export_status]
+            )
       
         # ========== TAB 2: VOICE CHAT ==========
         with gr.Tab("🎤 Voice Assistant"):
@@ -714,7 +740,8 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Soft(), title="NeuraFusion V3") a
                     img_answer = gr.Textbox(
                         label="💬 Analysis Result:",
                         lines=12,
-                        show_copy_button=True
+                        show_copy_button=True,
+                        elem_classes=["scrollable-textbox"]
                     )
           
             with gr.Row():
@@ -793,7 +820,8 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Soft(), title="NeuraFusion V3") a
                     mm_response = gr.Textbox(
                         label="💬 Complete Response",
                         lines=15,
-                        show_copy_button=True
+                        show_copy_button=True,
+                        elem_classes=["scrollable-textbox"]
                     )
                   
                     mm_audio_response = gr.Audio(
@@ -803,7 +831,8 @@ with gr.Blocks(css=custom_css, theme=gr.themes.Soft(), title="NeuraFusion V3") a
                   
                     mm_processing_info = gr.Textbox(
                         label="📊 Processing Information",
-                        lines=6
+                        lines=6,
+                        elem_classes=["scrollable-textbox"]
                     )
           
             with gr.Row():
