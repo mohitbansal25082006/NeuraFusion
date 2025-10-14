@@ -15,6 +15,7 @@ class FusionEngine:
     2. Processes each modality appropriately
     3. Combines results into coherent responses
     4. Maintains context across interactions
+    5. Supports personality integration and OpenAI enhancement
     """
     
     def __init__(self, text_processor, image_processor, audio_processor):
@@ -236,6 +237,180 @@ class FusionEngine:
             }
         }
     
+    def fuse_with_personality(self, text=None, image=None, audio=None, 
+                             personality_manager=None, openai_integration=None,
+                             include_voice_output=False):
+        """
+        Enhanced fusion with personality and optional OpenAI.
+        
+        Args:
+            text: Text input
+            image: Image input
+            audio: Audio input
+            personality_manager: PersonalityManager instance
+            openai_integration: OpenAIIntegration instance
+            include_voice_output: Generate voice response
+        
+        Returns:
+            Enhanced fusion result dictionary
+        """
+        
+        # Get personality context
+        personality_context = None
+        if personality_manager:
+            personality_context = personality_manager.get_system_prompt()
+        
+        # Analyze inputs
+        analysis = self.analyze_inputs(text, image, audio)
+        
+        # Initialize response components
+        response_parts = []
+        metadata = {
+            'timestamp': datetime.now().isoformat(),
+            'input_analysis': analysis,
+            'processing_steps': [],
+            'personality': personality_manager.current_personality if personality_manager else 'default',
+            'used_openai': False
+        }
+        
+        # Process Audio
+        audio_text = None
+        if analysis['has_audio']:
+            metadata['processing_steps'].append('audio_transcription')
+            
+            if isinstance(audio, str) and not audio.endswith(('.mp3', '.wav', '.m4a')):
+                audio_text = audio
+            else:
+                transcription = self.audio_proc.transcribe_audio(audio)
+                audio_text = transcription.get('text', '')
+                metadata['audio_transcription'] = {
+                    'success': bool(audio_text),
+                    'language': transcription.get('language', 'unknown')
+                }
+            
+            if audio_text:
+                response_parts.append(f"🎤 **Voice Input:** *\"{audio_text}\"*\n")
+        
+        # Process Image
+        image_description = None
+        if analysis['has_image']:
+            metadata['processing_steps'].append('image_analysis')
+            
+            # Try OpenAI first if available
+            if openai_integration and openai_integration.is_enabled():
+                question_text = audio_text or text
+                image_description = openai_integration.analyze_image(image, question_text)
+                metadata['used_openai'] = True
+            else:
+                # Use local BLIP-2
+                question_text = audio_text or text
+                if question_text and len(question_text.strip()) > 0:
+                    image_description = self.image_proc.answer_question(image, question_text)
+                else:
+                    image_description = self.image_proc.caption_image(image)
+            
+            response_parts.append(f"🖼️ **Image Analysis:** {image_description}\n")
+            
+            metadata['image_analysis'] = {
+                'method': 'openai' if metadata['used_openai'] else 'blip2',
+                'success': bool(image_description)
+            }
+        
+        # Process Text Query
+        text_response = None
+        combined_text = []
+        if audio_text:
+            combined_text.append(audio_text)
+        if text and len(str(text).strip()) > 0:
+            combined_text.append(str(text))
+        
+        query = " ".join(combined_text).strip()
+        
+        if query or image_description:
+            metadata['processing_steps'].append('text_generation')
+            
+            # Build prompt
+            if image_description and query:
+                prompt = f"Based on this image: '{image_description}', {query}"
+            elif image_description:
+                prompt = f"Describe insights about: '{image_description}'"
+            else:
+                prompt = query
+            
+            # Try OpenAI first if available and user wants it
+            if openai_integration and openai_integration.is_enabled():
+                personality_config = personality_manager.get_current_personality() if personality_manager else None
+                text_response = openai_integration.generate_text(
+                    prompt, 
+                    personality_config=personality_config
+                )
+                metadata['used_openai'] = True
+            else:
+                # Use local Flan-T5 with personality
+                text_response = self.text_proc.generate_response(
+                    prompt,
+                    personality_context=personality_context
+                )
+            
+            response_parts.append(f"💬 **Response:** {text_response}")
+            
+            metadata['text_generation'] = {
+                'prompt_length': len(prompt),
+                'response_length': len(text_response),
+                'model': 'gpt-4o' if metadata['used_openai'] else 'flan-t5',
+                'success': bool(text_response)
+            }
+        
+        # Combine parts
+        final_text = "\n".join(response_parts) if response_parts else "No input received."
+        
+        # Generate voice output
+        audio_output = None
+        if include_voice_output and text_response:
+            metadata['processing_steps'].append('tts_generation')
+            audio_output = self.audio_proc.text_to_speech(text_response)
+            metadata['tts_generation'] = {'success': audio_output is not None}
+        
+        return {
+            'text_response': final_text,
+            'audio_response': audio_output,
+            'metadata': metadata,
+            'components': {
+                'audio_transcription': audio_text,
+                'image_description': image_description,
+                'text_answer': text_response
+            }
+        }
+    
+    def generate_with_personality(self, text, personality_manager, openai_integration=None):
+        """
+        Generate response with personality mode.
+        
+        Args:
+            text: User input
+            personality_manager: PersonalityManager instance
+            openai_integration: Optional OpenAI integration
+        
+        Returns:
+            Response text
+        """
+        if not text or len(text.strip()) == 0:
+            return "Please provide a message."
+        
+        # Try OpenAI if available
+        if openai_integration and openai_integration.is_enabled():
+            personality_config = personality_manager.get_current_personality()
+            return openai_integration.generate_text(text, personality_config)
+        
+        # Use local with personality
+        personality_context = personality_manager.get_system_prompt()
+        return self.text_proc.generate_response(
+            text,
+            personality_context=personality_context,
+            temperature=personality_manager.get_temperature(),
+            max_length=personality_manager.get_max_length()
+        )
+    
     def simple_text_response(self, text):
         """
         Quick text-only response (for chat interface).
@@ -345,7 +520,9 @@ class FusionEngine:
                 'Context-aware responses',
                 'Voice input/output',
                 'Visual question answering',
-                'Multi-turn conversation'
+                'Multi-turn conversation',
+                'Personality integration',
+                'OpenAI enhancement'
             ]
         }
 
@@ -404,6 +581,51 @@ if __name__ == "__main__":
     print(f"Supported modalities: {', '.join(caps['supported_modalities'])}")
     print(f"Fusion modes: {', '.join(caps['fusion_modes'])}")
     print(f"Current mode: {caps['current_mode']}")
+    
+    print("\n" + "="*60)
+    print("Test 3: Personality Fusion (Mock)")
+    print("="*60)
+    
+    # Mock personality manager
+    class MockPersonalityManager:
+        def __init__(self):
+            self.current_personality = 'assistant'
+        
+        def get_system_prompt(self):
+            return "You are a helpful assistant."
+        
+        def get_current_personality(self):
+            return {'name': 'assistant', 'temperature': 0.7}
+        
+        def get_temperature(self):
+            return 0.7
+        
+        def get_max_length(self):
+            return 150
+    
+    # Mock OpenAI integration
+    class MockOpenAIIntegration:
+        def is_enabled(self):
+            return True
+        
+        def analyze_image(self, image, question):
+            return f"OpenAI analysis of image with question: {question}"
+        
+        def generate_text(self, prompt, personality_config=None):
+            return f"OpenAI response to: {prompt}"
+    
+    mock_personality = MockPersonalityManager()
+    mock_openai = MockOpenAIIntegration()
+    
+    # Test personality fusion
+    result = fusion.fuse_with_personality(
+        text="Hello there",
+        personality_manager=mock_personality,
+        openai_integration=mock_openai
+    )
+    
+    print(f"Personality fusion result: {result['text_response']}")
+    print(f"Used OpenAI: {result['metadata']['used_openai']}")
     
     print("\n" + "="*60)
     print("✅ Fusion Engine tests complete!")

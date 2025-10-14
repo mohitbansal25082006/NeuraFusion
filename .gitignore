@@ -8,3 +8,49 @@ __pycache__/
 # Optional: Ignore virtual environment folders
 venv/
 env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+*.env
+!.env.example
+
+# Model cache
+models_cache/
+*.pth
+*.bin
+*.safetensors
+
+# Exports
+exports/
+conversation_*.json
+conversation_*.txt
+conversation_*.md
+
+# Gradio
+gradio_cached_examples/
+flagged/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test files
+test_*.jpg
+test_*.mp3
+test_*.wav

@@ -32,7 +32,26 @@
   "ui_settings": {
     "theme": "soft",
     "dark_mode": true,
-    "accent_color": "#764ba2"
+    "accent_color": "#764ba2",
+    "enable_animations": true,
+    "mobile_responsive": true
+  },
+  "openai_settings": {
+    "enabled": false,
+    "model": "gpt-4o",
+    "max_tokens": 700,
+    "fallback_to_local": true
+  },
+  "visualization_settings": {
+    "enable_attention_maps": true,
+    "enable_color_analysis": true,
+    "default_colormap": "jet",
+    "save_visualizations": true
+  },
+  "export_settings": {
+    "formats": ["json", "txt", "md", "csv"],
+    "include_metadata": true,
+    "export_directory": "./exports"
   },
   "cache_directory": "./models_cache"
 }
