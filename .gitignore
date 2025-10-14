@@ -54,3 +54,5 @@ Thumbs.db
 test_*.jpg
 test_*.mp3
 test_*.wav
+
+deploy_package
