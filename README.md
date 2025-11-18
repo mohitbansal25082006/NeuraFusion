@@ -11,8 +11,8 @@
 [![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Transformers-yellow?style=flat-square&logo=huggingface)](https://huggingface.co/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-[![Demo](https://img.shields.io/badge/🧪-Try%20Demo-red?style=for-the-badge)](https://huggingface.co/spaces/yourusername/neurafusion)
-[![GitHub](https://img.shields.io/badge/📁-View%20on%20GitHub-black?style=for-the-badge)](https://github.com/yourusername/neurafusion)
+[![Demo](https://img.shields.io/badge/🧪-Try%20Demo-red?style=for-the-badge)](https://huggingface.co/spaces/mohitbansal25082006/NeuraFusion)
+[![GitHub](https://img.shields.io/badge/📁-View%20on%20GitHub-black?style=for-the-badge)](https://github.com/mohitbansal25082006/NeuraFusion)
 
 *A powerful multimodal AI assistant that combines text, image, and audio processing with customizable personalities*
 
@@ -381,7 +381,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ and 🧠 | NeuraFusion V3.0**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/neurafusion?style=social)](https://github.com/yourusername/neurafusion)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/neurafusion?style=social)](https://github.com/yourusername/neurafusion)
+[![GitHub stars](https://img.shields.io/github/stars/yourusername/neurafusion?style=social)](https://github.com/mohitbansal25082006/neurafusion)
+[![GitHub forks](https://img.shields.io/github/forks/yourusername/neurafusion?style=social)](https://github.com/mohitbansal25082006/neurafusion)
 
 </div>
