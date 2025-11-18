@@ -381,7 +381,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ and 🧠 | NeuraFusion V3.0**
 
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/neurafusion?style=social)](https://github.com/mohitbansal25082006/neurafusion)
-[![GitHub forks](https://img.shields.io/github/forks/yourusername/neurafusion?style=social)](https://github.com/mohitbansal25082006/neurafusion)
-
 </div>
